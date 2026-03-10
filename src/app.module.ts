@@ -3,10 +3,22 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ScheduleModule } from './schedule/schedule.module';
 import { RoomModule } from './room/room.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import mongoConfig from './config/mongo.config';
 
 @Module({
-  imports: [ScheduleModule, RoomModule],
+  imports: [ScheduleModule, RoomModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: mongoConfig,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
+
 })
-export class AppModule {}
+export class AppModule { }
