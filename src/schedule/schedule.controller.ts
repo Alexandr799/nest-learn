@@ -13,7 +13,7 @@ export class ScheduleController {
     }
 
     @Get(':id')
-    async index(@Param() id: string) {
+    async index(@Param('id') id: string) {
         const data = await this.scheduleService.index(id)
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -40,8 +40,8 @@ export class ScheduleController {
         }
     }
 
-    @Delete()
-    async delete(@Param() id: string) {
+    @Delete(":id")
+    async delete(@Param('id') id: string) {
         const data = await this.scheduleService.delete(id)
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)

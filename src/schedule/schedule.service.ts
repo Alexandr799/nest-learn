@@ -32,7 +32,10 @@ export class ScheduleService {
         if (exists) {
             throw new ScheduleError(SCHEDULE_BUSY)
         }
-        return this.scheduleModel.create(createScheduleDTO)
+        return this.scheduleModel.create({
+            ...createScheduleDTO,
+            date,
+        });
     }
 
     async delete(id: string) {
@@ -43,15 +46,26 @@ export class ScheduleService {
         const date = new Date(updateScheduleDTO.date)
         date.setHours(0, 0, 0, 0)
 
+        const updateModel = await this.scheduleModel.findById(updateScheduleDTO._id).exec()
+        if (!updateModel) {
+            return null
+        }
+
         const exists = await this.scheduleModel.findOne({
             date,
             roomId: updateScheduleDTO.roomId
         }).exec()
 
-        if (exists) {
+        if (exists && exists._id.toHexString() !== updateScheduleDTO._id) {
             throw new ScheduleError(SCHEDULE_BUSY)
         }
 
-        return this.scheduleModel.findOneAndUpdate({ _id: updateScheduleDTO._id }, updateScheduleDTO).exec()
+        return this.scheduleModel.findOneAndUpdate(
+            { _id: updateScheduleDTO._id },
+            {
+                ...updateScheduleDTO,
+                date,
+            }
+        ).exec()
     }
 }
