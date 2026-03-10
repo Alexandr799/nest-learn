@@ -56,19 +56,19 @@ describe('SheduleController (e2e)', () => {
       });
   });
 
-  it('/room/:id (GET) success', async () => {
+  it('/schedule/:id (GET) success', async () => {
     return request(app.getHttpServer())
       .get(`/schedule/${scheduleId}`)
       .expect(200)
   });
 
-  it('/room/:id (GET) fail', async () => {
+  it('/schedule/:id (GET) fail', async () => {
     return request(app.getHttpServer())
       .get(`/schedule/${scheduleIdFake}`)
       .expect(404)
   });
 
-  it('/room (PUT) success', async () => {
+  it('/schedule (PUT) success', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
       .send({ ...schedule, _id: scheduleId })
@@ -76,20 +76,20 @@ describe('SheduleController (e2e)', () => {
   });
 
   schedule.date.setMonth(Math.abs(schedule.date.getMonth() - 1))
-  it('/room (PUT) fail', async () => {
+  it('/schedule (PUT) fail', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
       .send({ ...schedule, _id: scheduleIdFake })
       .expect(404)
   });
 
-  it('/room/:id (DELETE) success', async () => {
+  it('/schedule/:id (DELETE) success', async () => {
     return request(app.getHttpServer())
       .delete(`/schedule/${scheduleId}`)
       .expect(200)
   });
 
-  it('/room/:id (DELETE) fail', async () => {
+  it('/schedule/:id (DELETE) fail', async () => {
     return request(app.getHttpServer())
       .delete(`/schedule/${scheduleIdFake}`)
       .expect(404)
