@@ -22,8 +22,11 @@ export class ScheduleService {
     }
 
     async create(createScheduleDTO: CreateScheduleDTO) {
+        const date = new Date(createScheduleDTO.date)
+        date.setHours(0, 0, 0, 0)
+
         const exists = await this.scheduleModel.findOne({
-            date: new Date(createScheduleDTO.date),
+            date,
             roomId: createScheduleDTO.roomId
         }).exec()
         if (exists) {
@@ -37,8 +40,12 @@ export class ScheduleService {
     }
 
     async update(updateScheduleDTO: UpdateScheduleDTO) {
+        const date = new Date(updateScheduleDTO.date)
+        date.setHours(0, 0, 0, 0)
+
         const exists = await this.scheduleModel.findOne({
-            date: new Date(updateScheduleDTO.date), roomId: updateScheduleDTO.roomId
+            date,
+            roomId: updateScheduleDTO.roomId
         }).exec()
 
         if (exists) {

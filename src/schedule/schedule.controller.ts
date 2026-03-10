@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpException, HttpStatus, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDTO } from './dto/CreateScheduleDTO';
 import { UpdateScheduleDTO } from './dto/UpdateScheduleDTO';
@@ -13,7 +13,7 @@ export class ScheduleController {
     }
 
     @Get(':id')
-    async index(id: string) {
+    async index(@Param() id: string) {
         const data = await this.scheduleService.index(id)
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -28,7 +28,7 @@ export class ScheduleController {
     }
 
     @Post()
-    async create(createScheduleDTO: CreateScheduleDTO) {
+    async create(@Body() createScheduleDTO: CreateScheduleDTO) {
         try {
             return await this.scheduleService.create(createScheduleDTO)
         } catch (e) {
@@ -41,7 +41,7 @@ export class ScheduleController {
     }
 
     @Delete()
-    async delete(id: string) {
+    async delete(@Param() id: string) {
         const data = await this.scheduleService.delete(id)
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -51,7 +51,7 @@ export class ScheduleController {
     }
 
     @Put()
-    async update(updateScheduleDTO: UpdateScheduleDTO) {
+    async update(@Body() updateScheduleDTO: UpdateScheduleDTO) {
         let data:null|ScheduleModel;
         try {
             data = await this.scheduleService.update(updateScheduleDTO)

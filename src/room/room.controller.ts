@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpException, HttpStatus, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDTO } from './dto/CreateRoomDTO';
 import { UpdateRoomDTO } from './dto/UpdateRoomDTO';
@@ -12,7 +12,7 @@ export class RoomController {
     }
 
     @Get(":id")
-    async index(id: string) {
+    async index(@Param() id: string) {
         const data = this.roomService.index(id)
         if (!data) {
             throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -27,12 +27,12 @@ export class RoomController {
     }
 
     @Post()
-    async create(createRoomDTO: CreateRoomDTO) {
+    async create(@Body() createRoomDTO: CreateRoomDTO) {
         return this.roomService.create(createRoomDTO)
     }
 
     @Delete(':id')
-    async delete(id: string) {
+    async delete(@Param() id: string) {
         const data = await this.roomService.delete(id)
         if (!data) {
             throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -42,7 +42,7 @@ export class RoomController {
     }
 
     @Put()
-    async update(updateRoomDTO: UpdateRoomDTO) {
+    async update(@Body() updateRoomDTO: UpdateRoomDTO) {
         const data = await this.roomService.update(updateRoomDTO)
         if (!data) {
             throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND)
