@@ -12,8 +12,8 @@ export class RoomController {
     }
 
     @Get(":id")
-    async index(@Param() id: string) {
-        const data = this.roomService.index(id)
+    async index(@Param('id') id: string) {
+        const data = await this.roomService.index(id)
         if (!data) {
             throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
@@ -32,7 +32,7 @@ export class RoomController {
     }
 
     @Delete(':id')
-    async delete(@Param() id: string) {
+    async delete(@Param('id') id: string) {
         const data = await this.roomService.delete(id)
         if (!data) {
             throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND)
