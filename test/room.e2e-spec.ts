@@ -17,6 +17,16 @@ const roomFake: CreateRoomDTO = {
   number: -1,
   type: -2
 }
+
+const roomFake1 = {
+  seaViewExists: true,
+}
+
+const roomFake2 = {
+  seaViewExists: true,
+  number: '-1s',
+  type: '-2qwe'
+}
 let roomId: string
 let roomIdFake: string = new Types.ObjectId().toHexString()
 
@@ -61,6 +71,20 @@ describe('RoomController (e2e)', () => {
       .expect(400)
   });
 
+  it('/room (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/room')
+      .send(roomFake1)
+      .expect(400)
+  });
+
+  it('/room (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/room')
+      .send(roomFake2)
+      .expect(400)
+  });
+
   it('/room (GET) success', async () => {
     return request(app.getHttpServer())
       .get('/room')
@@ -93,6 +117,20 @@ describe('RoomController (e2e)', () => {
     return request(app.getHttpServer())
       .put('/room')
       .send({ ...roomFake, _id: roomId })
+      .expect(400)
+  });
+
+  it('/room (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/room')
+      .send({ ...roomFake1, _id: roomId })
+      .expect(400)
+  });
+
+  it('/room (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/room')
+      .send({ ...roomFake2, _id: roomId })
       .expect(400)
   });
 

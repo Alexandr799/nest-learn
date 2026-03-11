@@ -18,6 +18,15 @@ const scheduleFake: CreateScheduleDTO = {
   roomId: ''
 }
 
+const scheduleFake1 = {
+  date: new Date(),
+}
+
+const scheduleFake2 = {
+  date: '123123',
+  roomId: [123]
+}
+
 let scheduleId: string
 let scheduleIdFake = new Types.ObjectId().toHexString()
 describe('SheduleController (e2e)', () => {
@@ -65,6 +74,20 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (POST) fail', async () => {
     return request(app.getHttpServer())
       .post('/schedule')
+      .send(scheduleFake1)
+      .expect(400)
+  });
+
+  it('/schedule (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule')
+      .send(scheduleFake2)
+      .expect(400)
+  });
+
+  it('/schedule (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule')
       .send(schedule)
       .expect(400)
   });
@@ -101,6 +124,20 @@ describe('SheduleController (e2e)', () => {
     return request(app.getHttpServer())
       .put('/schedule')
       .send({ ...scheduleFake, _id: scheduleId })
+      .expect(400)
+  });
+
+  it('/schedule (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/schedule')
+      .send({ ...scheduleFake1, _id: scheduleId })
+      .expect(400)
+  });
+
+  it('/schedule (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/schedule')
+      .send({ ...scheduleFake2, _id: scheduleId })
       .expect(400)
   });
 
