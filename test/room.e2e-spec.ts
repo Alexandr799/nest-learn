@@ -1,15 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { CreateRoomDTO } from 'src/room/dto/CreateRoomDTO';
+import { CreateRoomDTO } from '../src/room/dto/CreateRoomDTO';
 import { Types } from 'mongoose';
+import { TrimPipe } from '../src/pipes/TrimPipe';
 
 const room: CreateRoomDTO = {
   seaViewExists: true,
   number: 1,
   type: 2
+}
+const roomFake: CreateRoomDTO = {
+  seaViewExists: true,
+  number: -1,
+  type: -2
 }
 let roomId: string
 let roomIdFake: string = new Types.ObjectId().toHexString()
@@ -23,6 +29,13 @@ describe('RoomController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new TrimPipe(),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 
@@ -39,6 +52,13 @@ describe('RoomController (e2e)', () => {
         roomId = body._id
         expect(roomId).toBeDefined()
       });
+  });
+
+  it('/room (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/room')
+      .send(roomFake)
+      .expect(400)
   });
 
   it('/room (GET) success', async () => {
@@ -67,6 +87,13 @@ describe('RoomController (e2e)', () => {
       .put('/room')
       .send({ ...room, _id: roomId })
       .expect(200)
+  });
+
+  it('/room (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/room')
+      .send({ ...roomFake, _id: roomId })
+      .expect(400)
   });
 
   it('/room (PUT) fail', async () => {
