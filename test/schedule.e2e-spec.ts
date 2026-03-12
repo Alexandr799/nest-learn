@@ -1,16 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { Types } from 'mongoose';
-import { CreateScheduleDTO } from 'src/schedule/dto/CreateScheduleDTO';
+import { CreateScheduleDTO } from '../src/schedule/dto/CreateScheduleDTO';
+import { TrimPipe } from '../src/pipes/TrimPipe';
 
 
 const schedule: CreateScheduleDTO = {
   date: new Date(),
   roomId: new Types.ObjectId().toHexString()
 }
+
+const scheduleFake: CreateScheduleDTO = {
+  date: new Date(),
+  roomId: ''
+}
+
+const scheduleFake1 = {
+  date: new Date(),
+}
+
+const scheduleFake2 = {
+  date: '123123',
+  roomId: [123]
+}
+
 let scheduleId: string
 let scheduleIdFake = new Types.ObjectId().toHexString()
 describe('SheduleController (e2e)', () => {
@@ -22,6 +38,14 @@ describe('SheduleController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new TrimPipe(),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 
@@ -38,6 +62,27 @@ describe('SheduleController (e2e)', () => {
         scheduleId = body._id
         expect(scheduleId).toBeDefined()
       });
+  });
+
+  it('/schedule (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule')
+      .send(scheduleFake)
+      .expect(400)
+  });
+
+  it('/schedule (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule')
+      .send(scheduleFake1)
+      .expect(400)
+  });
+
+  it('/schedule (POST) fail', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule')
+      .send(scheduleFake2)
+      .expect(400)
   });
 
   it('/schedule (POST) fail', async () => {
@@ -73,6 +118,27 @@ describe('SheduleController (e2e)', () => {
       .put('/schedule')
       .send({ ...schedule, _id: scheduleId })
       .expect(200)
+  });
+
+  it('/schedule (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/schedule')
+      .send({ ...scheduleFake, _id: scheduleId })
+      .expect(400)
+  });
+
+  it('/schedule (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/schedule')
+      .send({ ...scheduleFake1, _id: scheduleId })
+      .expect(400)
+  });
+
+  it('/schedule (PUT) fail', async () => {
+    return request(app.getHttpServer())
+      .put('/schedule')
+      .send({ ...scheduleFake2, _id: scheduleId })
+      .expect(400)
   });
 
   schedule.date.setMonth(Math.abs(schedule.date.getMonth() - 1))
