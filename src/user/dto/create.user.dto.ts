@@ -19,4 +19,8 @@ export class CreateUserDto  {
     @IsString() 
     @Matches(/^\+?[1-9]\d{10,14}$/, { message: 'phone must be a valid phone number', })
     phone!: string
+
+    @IsString()
+    @MinLength(1)
+    name: string
 }

@@ -42,10 +42,11 @@ export class AuthService {
             email: dto.login,
             passwordHash: hashSync(dto.password, salt),
             roles: dto.roles,
-            phone: dto.phone
+            phone: dto.phone,
+            name: dto.name
         })
 
-        const payload = { email: newUser.email, roles: newUser.roles }
+        const payload = { _id: newUser._id, email: newUser.email, roles: newUser.roles }
         return {
             access_token: this.jwtService.sign(payload)
         }

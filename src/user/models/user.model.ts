@@ -15,6 +15,9 @@ export class UserModel {
 
     @Prop()
     phone: string
+
+    @Prop()
+    name: string
 }
 
 export type UserDocument = HydratedDocument<UserModel>

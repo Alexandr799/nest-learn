@@ -10,6 +10,10 @@ export class RegisterDto {
     @MinLength(1)
     password!: string;
 
+    @IsString()
+    @MinLength(1)
+    name!: string;
+
     @IsArray()
     @ArrayUnique()
     @ArrayMinSize(1)
