@@ -5,10 +5,14 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { RoomModule } from './room/room.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import mongoConfig from './config/mongo.config';
 
 @Module({
-  imports: [ScheduleModule, RoomModule,
+  imports: [
+    ScheduleModule, 
+    RoomModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -16,6 +20,8 @@ import mongoConfig from './config/mongo.config';
       inject: [ConfigService],
       useFactory: mongoConfig,
     }),
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
