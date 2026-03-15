@@ -31,4 +31,43 @@ export class RoomService {
         return this.roomModel.findOneAndUpdate({ _id: updateRoomDTO._id }, updateRoomDTO).exec()
     }
 
+    async getStatByMonth(month: number) {
+        if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(month)) {
+            return [];
+        }
+
+        return this.roomModel.aggregate([
+            {
+                $lookup: {
+                    from: 'schedule',
+                    let: { roomId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$roomId', '$$roomId'] },
+                                        { $eq: [{ $month: '$date' }, month] },
+                                    ],
+                                },
+                            },
+                        },
+                    ],
+                    as: 'bookings',
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    roomId: '$_id',
+                    number: 1,
+                    bookedDays: { $size: '$bookings' },
+                },
+            },
+            {
+                $sort: { number: 1 },
+            },
+        ]);
+    }
+
 }

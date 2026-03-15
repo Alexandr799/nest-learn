@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { ScheduleDocument, ScheduleModel } from "./models/schedule.model";
+import { ScheduleDocument, Schedule } from "./models/schedule.model";
 import { Model } from "mongoose";
 import { CreateScheduleDTO } from "./dto/CreateScheduleDTO";
 import { UpdateScheduleDTO } from "./dto/UpdateScheduleDTO";
@@ -9,49 +9,49 @@ import { SCHEDULE_BUSY } from "./schedule.const";
 
 @Injectable()
 export class ScheduleService {
-    constructor(@InjectModel(ScheduleModel.name) private scheduleModel: Model<ScheduleDocument>) {
+    constructor(@InjectModel(Schedule.name) private Schedule: Model<ScheduleDocument>) {
 
     }
 
     async index(id: string) {
-        return this.scheduleModel.findById(id).exec()
+        return this.Schedule.findById(id).exec()
     }
 
     async list() {
-        return this.scheduleModel.find().exec()
+        return this.Schedule.find().exec()
     }
 
     async create(createScheduleDTO: CreateScheduleDTO) {
         const date = new Date(createScheduleDTO.date)
         date.setHours(0, 0, 0, 0)
 
-        const exists = await this.scheduleModel.findOne({
+        const exists = await this.Schedule.findOne({
             date,
             roomId: createScheduleDTO.roomId
         }).exec()
         if (exists) {
             throw new ScheduleError(SCHEDULE_BUSY)
         }
-        return this.scheduleModel.create({
+        return this.Schedule.create({
             ...createScheduleDTO,
             date,
         });
     }
 
     async delete(id: string) {
-        return this.scheduleModel.findByIdAndDelete(id).exec()
+        return this.Schedule.findByIdAndDelete(id).exec()
     }
 
     async update(updateScheduleDTO: UpdateScheduleDTO) {
         const date = new Date(updateScheduleDTO.date)
         date.setHours(0, 0, 0, 0)
 
-        const updateModel = await this.scheduleModel.findById(updateScheduleDTO._id).exec()
+        const updateModel = await this.Schedule.findById(updateScheduleDTO._id).exec()
         if (!updateModel) {
             return null
         }
 
-        const exists = await this.scheduleModel.findOne({
+        const exists = await this.Schedule.findOne({
             date,
             roomId: updateScheduleDTO.roomId
         }).exec()
@@ -60,7 +60,7 @@ export class ScheduleService {
             throw new ScheduleError(SCHEDULE_BUSY)
         }
 
-        return this.scheduleModel.findOneAndUpdate(
+        return this.Schedule.findOneAndUpdate(
             { _id: updateScheduleDTO._id },
             {
                 ...updateScheduleDTO,

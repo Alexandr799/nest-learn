@@ -3,7 +3,7 @@ import { HydratedDocument } from "mongoose";
 import { Role } from "../../auth/enum/roles.enum";
 
 @Schema({ _id: true, timestamps: true })
-export class UserModel {
+export class User {
     @Prop()
     email: string
 
@@ -20,6 +20,6 @@ export class UserModel {
     name: string
 }
 
-export type UserDocument = HydratedDocument<UserModel>
+export type UserDocument = HydratedDocument<User>
 
-export const UserSchema = SchemaFactory.createForClass(UserModel)
+export const UserSchema = SchemaFactory.createForClass(User)

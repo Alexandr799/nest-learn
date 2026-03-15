@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../auth/enum/roles.enum';
+import { MonthValidPipe } from 'src/pipes/MonthValidPipe';
 
 @Controller('room')
 export class RoomController {
@@ -58,5 +59,12 @@ export class RoomController {
             throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
         return data
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
+    @Get('stat/:month')
+    async statMonth(@Param('month', MonthValidPipe) month: string) {
+        return await this.roomService.getStatByMonth(parseInt(month))
     }
 }

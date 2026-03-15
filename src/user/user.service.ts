@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { genSaltSync } from "bcryptjs";
-import { UserDocument, UserModel } from "./models/user.model";
+import { UserDocument, User } from "./models/user.model";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { UpdateUserDto } from "./dto/update.user.dto";
@@ -9,22 +9,22 @@ import { CreateUserDto } from "./dto/create.user.dto";
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
+        @InjectModel(User.name) private User: Model<UserDocument>,
     ) {
 
     }
 
     async getByEmail(email: string) {
-        return this.userModel.findOne({ email })
+        return this.User.findOne({ email })
     }
 
     async createUser(userDto: CreateUserDto) {
-        const newUser = new this.userModel(userDto)
+        const newUser = new this.User(userDto)
         return newUser.save();
     }
 
     async updateUser(userDto: UpdateUserDto) {
-        const newUser = await this.userModel.findByIdAndUpdate(
+        const newUser = await this.User.findByIdAndUpdate(
             userDto._id,
             userDto
         ).exec()
@@ -35,7 +35,7 @@ export class UserService {
     }
 
     async deleteUser(_id: string) {
-        const newUser = await this.userModel.findByIdAndDelete(_id).exec()
+        const newUser = await this.User.findByIdAndDelete(_id).exec()
         if (!newUser) {
             throw new BadRequestException('Не удалост удалить пользователя')
         }
