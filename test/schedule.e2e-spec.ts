@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import { Types } from 'mongoose';
 import { CreateScheduleDTO } from '../src/schedule/dto/CreateScheduleDTO';
 import { TrimPipe } from '../src/pipes/TrimPipe';
+import { AuthDto } from 'src/auth/dto/auth.dto';
 
 
 const schedule: CreateScheduleDTO = {
@@ -27,11 +28,17 @@ const scheduleFake2 = {
   roomId: [123]
 }
 
+const authLogin: AuthDto = {
+  "login": "hello@alexstrigo.ru",
+  "password": "12345678"
+}
+
+
 let scheduleId: string
 let scheduleIdFake = new Types.ObjectId().toHexString()
 describe('SheduleController (e2e)', () => {
   let app: INestApplication<App>;
-
+  let token: string
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -47,15 +54,28 @@ describe('SheduleController (e2e)', () => {
       }),
     );
     await app.init();
+    const data = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send(authLogin)
+
+    token = data.body.access_token
   });
 
   afterEach(async () => {
     await app.close();
   });
 
+  it('/schedule (POST) fail unauth', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule')
+      .send(schedule)
+      .expect(401)
+  });
+
   it('/schedule (POST) success', async () => {
     return request(app.getHttpServer())
       .post('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send(schedule)
       .expect(201)
       .then(({ body }: request.Response) => {
@@ -67,6 +87,7 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (POST) fail', async () => {
     return request(app.getHttpServer())
       .post('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send(scheduleFake)
       .expect(400)
   });
@@ -74,6 +95,8 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (POST) fail', async () => {
     return request(app.getHttpServer())
       .post('/schedule')
+      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(scheduleFake1)
       .expect(400)
   });
@@ -81,6 +104,7 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (POST) fail', async () => {
     return request(app.getHttpServer())
       .post('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send(scheduleFake2)
       .expect(400)
   });
@@ -88,6 +112,7 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (POST) fail', async () => {
     return request(app.getHttpServer())
       .post('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send(schedule)
       .expect(400)
   });
@@ -113,9 +138,17 @@ describe('SheduleController (e2e)', () => {
       .expect(404)
   });
 
+  it('/schedule (PUT) fail unauth', async () => {
+    return request(app.getHttpServer())
+      .put('/schedule')
+      .send({ ...schedule, _id: scheduleId })
+      .expect(401)
+  });
+
   it('/schedule (PUT) success', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send({ ...schedule, _id: scheduleId })
       .expect(200)
   });
@@ -123,6 +156,7 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (PUT) fail', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send({ ...scheduleFake, _id: scheduleId })
       .expect(400)
   });
@@ -130,6 +164,7 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (PUT) fail', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send({ ...scheduleFake1, _id: scheduleId })
       .expect(400)
   });
@@ -137,6 +172,7 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (PUT) fail', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send({ ...scheduleFake2, _id: scheduleId })
       .expect(400)
   });
@@ -145,19 +181,28 @@ describe('SheduleController (e2e)', () => {
   it('/schedule (PUT) fail', async () => {
     return request(app.getHttpServer())
       .put('/schedule')
+      .set('Authorization', `Bearer ${token}`)
       .send({ ...schedule, _id: scheduleIdFake })
       .expect(404)
+  });
+
+  it('/schedule/:id (DELETE) fail unauth', async () => {
+    return request(app.getHttpServer())
+      .delete(`/schedule/${scheduleId}`)
+      .expect(401)
   });
 
   it('/schedule/:id (DELETE) success', async () => {
     return request(app.getHttpServer())
       .delete(`/schedule/${scheduleId}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
   });
 
   it('/schedule/:id (DELETE) fail', async () => {
     return request(app.getHttpServer())
       .delete(`/schedule/${scheduleIdFake}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(404)
   });
 

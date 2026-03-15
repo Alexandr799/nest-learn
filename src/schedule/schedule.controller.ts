@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDTO } from './dto/CreateScheduleDTO';
 import { UpdateScheduleDTO } from './dto/UpdateScheduleDTO';
 import { ScheduleError } from './errors/ScheduleError';
 import { SCHEDULE_NOT_FOUND } from './schedule.const';
 import { ScheduleModel } from './models/schedule.model';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('schedule')
 export class ScheduleController {
@@ -27,6 +28,7 @@ export class ScheduleController {
         return await this.scheduleService.list()
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post()
     async create(@Body() createScheduleDTO: CreateScheduleDTO) {
         try {
@@ -40,6 +42,7 @@ export class ScheduleController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete(":id")
     async delete(@Param('id') id: string) {
         const data = await this.scheduleService.delete(id)
@@ -50,6 +53,7 @@ export class ScheduleController {
         return data
     }
 
+    @UseGuards(JwtAuthGuard)
     @Put()
     async update(@Body() updateScheduleDTO: UpdateScheduleDTO) {
         let data:null|ScheduleModel;
