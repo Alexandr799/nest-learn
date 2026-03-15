@@ -1,0 +1,10 @@
+version: '3'
+services:
+  nest-learn-api:
+    image: nest-learn-api:latest
+    container_name: nest-learn-api
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./.env:/opt/app/.env
