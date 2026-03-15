@@ -1,0 +1,1 @@
+export const  FAIL_MONTH = 'Месяц должен быть с 1 по 12'

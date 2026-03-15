@@ -4,7 +4,7 @@ import { CreateScheduleDTO } from './dto/CreateScheduleDTO';
 import { UpdateScheduleDTO } from './dto/UpdateScheduleDTO';
 import { ScheduleError } from './errors/ScheduleError';
 import { SCHEDULE_NOT_FOUND } from './schedule.const';
-import { ScheduleModel } from './models/schedule.model';
+import { Schedule } from './models/schedule.model';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('schedule')
@@ -56,7 +56,7 @@ export class ScheduleController {
     @UseGuards(JwtAuthGuard)
     @Put()
     async update(@Body() updateScheduleDTO: UpdateScheduleDTO) {
-        let data:null|ScheduleModel;
+        let data:null|Schedule;
         try {
             data = await this.scheduleService.update(updateScheduleDTO)
         } catch (e) {

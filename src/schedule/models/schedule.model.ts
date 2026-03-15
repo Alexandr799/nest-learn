@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import {  HydratedDocument, Types } from "mongoose";
 
 @Schema({ _id: true, timestamps: true })
-export class ScheduleModel {
+export class Schedule {
     @Prop()
     date: Date
 
@@ -10,6 +10,6 @@ export class ScheduleModel {
     roomId!: Types.ObjectId
 }
 
-export type ScheduleDocument = HydratedDocument<ScheduleModel>
+export type ScheduleDocument = HydratedDocument<Schedule>
 
-export const ScheduleSchema = SchemaFactory.createForClass(ScheduleModel)
+export const ScheduleSchema = SchemaFactory.createForClass(Schedule)
