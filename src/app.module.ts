@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { FileModule } from './file/file.module';
 import mongoConfig from './config/mongo.config';
 
 @Module({
@@ -22,6 +23,7 @@ import mongoConfig from './config/mongo.config';
     }),
     UserModule,
     AuthModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
