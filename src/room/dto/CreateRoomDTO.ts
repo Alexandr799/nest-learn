@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, Min, MIN } from "class-validator"
+import { IsArray, IsBoolean, IsNumber, IsString, Min, MIN } from "class-validator"
 
 export class CreateRoomDTO {
     @IsNumber()
@@ -11,4 +11,8 @@ export class CreateRoomDTO {
 
     @IsBoolean()
     seaViewExists: boolean
+
+    @IsArray()
+    @IsString({each: true})
+    images: string[]
 }

@@ -11,6 +11,9 @@ export class RoomModel {
 
     @Prop()
     seaViewExists: boolean
+
+    @Prop()
+    images: string[]
 }
 
 export type RoomDocument = HydratedDocument<RoomModel>
