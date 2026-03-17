@@ -37,7 +37,7 @@ export class ScheduleController {
     async create(@Body() createScheduleDTO: CreateScheduleDTO, @Req() req) {
         try {
             const data = await this.scheduleService.create(createScheduleDTO)
-            this.telegramService.sendMessage(`Комната: ${data.roomId} - забронировано пользователем с id: ${req.user._id}, номер бронирования - ${data._id}`)
+            this.telegramService.sendMessage(`Комната: ${data.roomId} - забронировано пользователем с email: ${req.user.email}, номер бронирования - ${data._id}`)
             return data
         } catch (e) {
             if (e instanceof ScheduleError) {
@@ -55,7 +55,7 @@ export class ScheduleController {
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
-        this.telegramService.sendMessage(`Бронирование комнаты: ${data.roomId} (номер бронирования - ${id}) - отменено пользователем с id: ${req.user._id}`)
+        this.telegramService.sendMessage(`Бронирование комнаты: ${data.roomId} (номер бронирования - ${id}) - отменено пользователем с email: ${req.user.email}`)
 
         return data
     }
@@ -77,7 +77,7 @@ export class ScheduleController {
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
-        this.telegramService.sendMessage(`Бронирование: ${updateScheduleDTO._id} - изменено пользователем с id: ${req.user._id}`)
+        this.telegramService.sendMessage(`Бронирование: ${updateScheduleDTO._id} - изменено пользователем с email: ${req.user.email}`)
         return data;
     }
 }
