@@ -9,6 +9,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
 import mongoConfig from './config/mongo.config';
+import { TelegramModule } from './telegram/telegram.module';
+import telegramConfig from './config/telegram.config';
 
 @Module({
   imports: [
@@ -20,6 +22,10 @@ import mongoConfig from './config/mongo.config';
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: mongoConfig,
+    }),
+        TelegramModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: telegramConfig
     }),
     UserModule,
     AuthModule,
