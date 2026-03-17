@@ -9,7 +9,9 @@ import { SCHEDULE_BUSY } from "./schedule.const";
 
 @Injectable()
 export class ScheduleService {
-    constructor(@InjectModel(Schedule.name) private Schedule: Model<ScheduleDocument>) {
+    constructor(
+        @InjectModel(Schedule.name) private Schedule: Model<ScheduleDocument>
+    ) {
 
     }
 
@@ -32,10 +34,11 @@ export class ScheduleService {
         if (exists) {
             throw new ScheduleError(SCHEDULE_BUSY)
         }
-        return this.Schedule.create({
+        const data = await this.Schedule.create({
             ...createScheduleDTO,
             date,
         });
+        return data
     }
 
     async delete(id: string) {

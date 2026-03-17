@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDTO } from './dto/CreateScheduleDTO';
 import { UpdateScheduleDTO } from './dto/UpdateScheduleDTO';
@@ -6,10 +6,14 @@ import { ScheduleError } from './errors/ScheduleError';
 import { SCHEDULE_NOT_FOUND } from './schedule.const';
 import { Schedule } from './models/schedule.model';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 @Controller('schedule')
 export class ScheduleController {
-    constructor(private scheduleService: ScheduleService) {
+    constructor(
+        private scheduleService: ScheduleService,
+        private telegramService: TelegramService
+    ) {
 
     }
 
@@ -30,9 +34,11 @@ export class ScheduleController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async create(@Body() createScheduleDTO: CreateScheduleDTO) {
+    async create(@Body() createScheduleDTO: CreateScheduleDTO, @Req() req) {
         try {
-            return await this.scheduleService.create(createScheduleDTO)
+            const data = await this.scheduleService.create(createScheduleDTO)
+            this.telegramService.sendMessage(`Комната: ${data.roomId} - забронировано пользователем с email: ${req.user.email}, номер бронирования - ${data._id}`)
+            return data
         } catch (e) {
             if (e instanceof ScheduleError) {
                 throw new HttpException(e.message, HttpStatus.BAD_REQUEST)
@@ -44,19 +50,20 @@ export class ScheduleController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(":id")
-    async delete(@Param('id') id: string) {
+    async delete(@Param('id') id: string, @Req() req) {
         const data = await this.scheduleService.delete(id)
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
+        this.telegramService.sendMessage(`Бронирование комнаты: ${data.roomId} (номер бронирования - ${id}) - отменено пользователем с email: ${req.user.email}`)
 
         return data
     }
 
     @UseGuards(JwtAuthGuard)
     @Put()
-    async update(@Body() updateScheduleDTO: UpdateScheduleDTO) {
-        let data:null|Schedule;
+    async update(@Body() updateScheduleDTO: UpdateScheduleDTO, @Req() req) {
+        let data: null | Schedule;
         try {
             data = await this.scheduleService.update(updateScheduleDTO)
         } catch (e) {
@@ -70,6 +77,7 @@ export class ScheduleController {
         if (!data) {
             throw new HttpException(SCHEDULE_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
+        this.telegramService.sendMessage(`Бронирование: ${updateScheduleDTO._id} - изменено пользователем с email: ${req.user.email}`)
         return data;
     }
 }
